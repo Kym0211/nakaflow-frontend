@@ -28,6 +28,7 @@ export const Home: () => JSX.Element = () => {
   // https://www.saltycrane.com/blog/2021/04/buildtime-vs-runtime-environment-variables-nextjs-docker/
   // PS: This is the nakaflow server address.
   let url = "https://nakaflow.io/api/naka-coeffs";
+  // let url = "http://localhost:8080/naka-coeffs";
   const { data, error } = useSWR(url, fetcher);
 
   if (error) {

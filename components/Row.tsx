@@ -10,7 +10,7 @@ interface RowProps {
 
 const toggle = (isOpen: boolean) => !isOpen;
 
-const cardHeight = 600;
+const cardHeight = 900;
 
 const Row: React.FC<RowProps> = ({ protocol }) => {
   const plausible = usePlausible();
