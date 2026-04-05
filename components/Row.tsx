@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { usePlausible } from 'next-plausible';
-import { ChevronDown, ChevronUp } from 'react-feather';
+import { Info } from 'react-feather';
 import DetailsCard from './DetailsCard';
 
 interface RowProps {
@@ -37,10 +37,12 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
             : undefined,
         }}
       >
-        <div className="name">{protocol.results.name}</div>
-        <div className="amount">{protocol.results.prevVal == undefined ? 0: protocol.results.prevVal}</div>
+        <div className="name">
+          {protocol.results.name}
+          <span className={`info-icon ${open ? "active" : ""}`}><Info size={14} /></span>
+        </div>
         <div className="amount">{protocol.results.currVal == undefined ? 0: protocol.results.currVal}</div>
-        <div className="arrow">{open ? <ChevronUp /> : <ChevronDown />}</div>
+        <div className="amount">{protocol.results.prevVal == undefined ? 0: protocol.results.prevVal}</div>
       </div>
 
       <CSSTransition in={open} timeout={500} unmountOnExit>
@@ -78,6 +80,9 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
         .name {
           flex: 1;
           padding-left: 32px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
         }
 
         .amount {
@@ -87,13 +92,32 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
         .amount {
           min-width: 200px;
           text-align: right;
+          padding-right: 32px;
           font-family: "Noto Sans TC", sans-serif;
         }
 
-        .arrow {
-          padding: 0 4px;
-          height: 24px;
-          opacity: 0.7;
+        .info-icon {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 5px;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          opacity: 0.4;
+          transition: opacity 0.2s ease, background-color 0.2s ease;
+          cursor: pointer;
+          flex-shrink: 0;
+          line-height: 0;
+        }
+        .info-icon:hover {
+          opacity: 0.8;
+          background-color: rgba(0, 0, 0, 0.06);
+        }
+        .info-icon.active {
+          opacity: 1;
+          color: #29221F;
+          background-color: #E1E3E6;
         }
 
         @keyframes slidein {
@@ -142,6 +166,7 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
             font-size: 14px;
             min-width: 110px;
             padding-left: 8px;
+            padding-right: 2px;
           }
 
           .item {
@@ -149,8 +174,9 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
             background-position: 6px center;
           }
 
-          .arrow {
-            padding: 0 2px;
+          .info-icon {
+            width: 20px;
+            height: 20px;
           }
         }
 
@@ -164,10 +190,11 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
           .amount {
             min-width: 80px;
             padding-left: 20px;
+            padding-right: 2px;
           }
-          .arrow {
-            padding: 0 0 0 4px;
-            height: 20px;
+          .info-icon {
+            width: 18px;
+            height: 18px;
           }
         }
       `}</style>
