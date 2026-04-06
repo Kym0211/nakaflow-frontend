@@ -1,69 +1,72 @@
 import React from "react";
+import Link from "next/link";
+import { GetStaticProps } from "next";
 import List from "components/List";
 import CHAIN_DATA from "../components/constants";
-import useSWR from "swr";
 
-const fetcher = (url: string) =>
-  fetch(url).then(async (res) => {
-    let r = await res.json();
-    return r.coefficients?.map((chain: any, indx: number) => {
-      return {
-        id: indx + 1,
-        results: {
-          metadata: CHAIN_DATA?.get(chain.chain_token)?.metadata,
-          name: CHAIN_DATA?.get(chain.chain_token)?.name,
-          icon: CHAIN_DATA?.get(chain.chain_token)?.icon,
-          currVal: chain.naka_co_curr_val,
-          prevVal: chain.naka_co_prev_val,
-        },
-      };
-    });
-  });
+interface ChainResult {
+  id: number;
+  results: {
+    metadata: any;
+    name: string;
+    icon: string;
+    currVal: number;
+    prevVal: number;
+  };
+}
 
-export const Home: () => JSX.Element = () => {
-  let url = "https://nakaflow.io/api/naka-coeffs";
-  const { data, error } = useSWR(url, fetcher);
+interface HomeProps {
+  chains: ChainResult[];
+  lastUpdated: string | null;
+}
 
-  if (error) {
-    console.log("error is", error);
-    return (
-      <div>
-        <h1 className="title">An error has occurred</h1>
-        <p className="contentTitle">
-          Ping me on <a href="https://twitter.com/KavyamSingh">twitter</a>. I will
-          try to look into it.
-        </p>
-      </div>
-    );
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  try {
+    const res = await fetch("https://nakaflow.io/api/naka-coeffs");
+    const r = await res.json();
+
+    const chains = (r.coefficients ?? []).map((chain: any, indx: number) => ({
+      id: indx + 1,
+      results: {
+        metadata: CHAIN_DATA?.get(chain.chain_token)?.metadata ?? null,
+        name: CHAIN_DATA?.get(chain.chain_token)?.name ?? "",
+        icon: CHAIN_DATA?.get(chain.chain_token)?.icon ?? "",
+        currVal: chain.naka_co_curr_val ?? 0,
+        prevVal: chain.naka_co_prev_val ?? 0,
+      },
+    }));
+
+    let lastUpdated: string | null = null;
+    if (r.last_updated) {
+      lastUpdated = new Date(r.last_updated).toUTCString();
+    }
+
+    return {
+      props: { chains, lastUpdated },
+      revalidate: 1800,
+    };
+  } catch (e) {
+    return {
+      props: { chains: [], lastUpdated: null },
+      revalidate: 60,
+    };
   }
+};
 
-  if (!data)
-    return (
-      <div>
-        <h1 className="description">Loading...</h1>
-        <h2>Seems like server didn't send any data 🤔</h2>
-        <p className="contentTitle">
-          Ping me on <a href="https://twitter.com/KavyamSingh">twitter</a>. I will
-          try to look into it.
-        </p>
-      </div>
-    );
-  
-  const sortedChains = [...data].sort((a, b) => {
-    return a.results.name.localeCompare(b.results.name);
-  });
+const Home: React.FC<HomeProps> = ({ chains, lastUpdated }) => {
+  const sortedChains = [...chains].sort((a, b) =>
+    a.results.name.localeCompare(b.results.name)
+  );
 
   return (
     <main>
-      {/* <SocialTags /> */}
       <h1 className="title">Nakamoto Coefficients</h1>
       <p className="description">Live decentralization metrics for Proof-of-Stake blockchains </p>
-      {/*<p className="title">*/}
-      {/*    This site is under maintenance. Please check after some time.*/}
-      {/*</p>*/}
       <p className="content">
         See how resistant a chain is to censorship or collusion. Compare metrics, explore thresholds, export data.
       </p>
+      {/* {lastUpdated && <p className="lastUpdated">Last updated: {lastUpdated}</p>} */}
+      <p className="lastUpdated">Last updated: Apr 6, 2026, 12:00 PM UTC (harcoded for now)</p> 
       <List data={sortedChains} />
       <button
         className="csv-btn"
@@ -111,54 +114,9 @@ export const Home: () => JSX.Element = () => {
           </ul>
 
           We then determine the minimum number of these entities required to reach the control threshold, based on their total staked share.
+          <br /><br />
+          <Link href="/methodology">Read our full methodology, limitations, and practical guidance →</Link>
         </div>
-      </div>
-
-      <div>
-        <p className="contentTitle">
-          Important Limitations
-        </p>
-        <p className="content">
-          Nakaflow's Nakamoto Coefficient should be understood as a conservative, data-driven estimate, not an absolute truth. Where ownership or control relationships cannot be verified, we rely on transparent assumptions and verifiable public information. Nakaflow does not currently account for geographic concentration, cloud infrastructure dependencies, or governance-layer centralization, which may further affect a network's real-world decentralization.
-          <br /><br />
-          Our goal is not to claim perfect certainty but to provide the clearest, most defensible view of real-world decentralization using available data.     
-        </p>
-      </div>
-
-      <div>
-        <p className="contentTitle">
-          Improving the Nakamoto Coefficient on Your Networks
-        </p>
-        <p className="content">
-          Improving a blockchain's Nakamoto Coefficient means reducing the concentration of control among a small number of large entities. In Proof-of-Stake networks, this is primarily influenced by how and where tokens are staked.
-          <br /><br />
-          The most effective way to increase the Nakamoto Coefficient is to distribute stake across a larger number of independent validator operators, rather than concentrating it with the largest stake holders.
-        </p>
-      </div>
-
-      <div>
-        <p className="contentTitle">
-          Practical Ways to Improve the Nakamoto Coefficient
-        </p>
-        <div className="content">
-          Token holders can directly influence network decentralization by adjusting their staking behavior. Two proven approaches are:
-
-          <ol>
-          <li><b>Stake with smaller, independent validators:</b> Use block explorers or staking dashboards to identify validator operators outside the top stake holders. Delegating stake to these operators helps reduce concentration and increases the number of entities required to reach control thresholds.</li>
-          <li><b>Use Algorithmic or Distributed Stake Pools:</b> Some staking solutions automatically rebalance stake toward high-performing but smaller validators. These algorithmic stake pools are designed to optimize both performance and decentralization without requiring manual validator selection.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div>
-        <p className="contentTitle">
-          Why This Matters
-        </p>
-        <p className="content">
-          A higher Nakamoto Coefficient makes a network more resilient to censorship, collusion, and operational failure. While protocol design plays a role, staking decisions made by token holders are a major driver of real-world decentralization.
-          <br /><br />
-          By consciously distributing stake, participants contribute to stronger, more decentralized blockchain networks.
-        </p>
       </div>
 
       <div>
@@ -176,8 +134,8 @@ export const Home: () => JSX.Element = () => {
           </ul>
         </div>
       </div>
-     
-      <div> 
+
+      <div>
         <p className="contentTitle">Support Nakaflow</p>
         <p className="content">
           Nakaflow is brought to you by{" "}
@@ -246,6 +204,12 @@ export const Home: () => JSX.Element = () => {
           font-size: 1.2rem;
           margin: 4px 0 20px;
           max-width: 800px;
+        }
+
+        .lastUpdated {
+          font-size: 0.9rem;
+          color: #666;
+          margin: 0 0 12px;
         }
 
         .csv-btn {
