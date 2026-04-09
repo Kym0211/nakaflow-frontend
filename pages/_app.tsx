@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import Script from 'next/script';
 import type { AppProps } from 'next/app';
 import PlausibleProvider from 'next-plausible';
 import Header from 'components/Header';
@@ -19,6 +20,18 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
           rel="stylesheet"
         />
       </Head>
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-F5CPK0BS0L"
+        strategy="afterInteractive"
+      />
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-F5CPK0BS0L');
+        `}
+      </Script>
 
       <SocialTags />
 
