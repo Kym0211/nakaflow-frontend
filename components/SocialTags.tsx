@@ -2,30 +2,52 @@ import React from 'react';
 import Head from 'next/head';
 
 const SocialTags: React.FC = () => {
+  const title = "Nakaflow | Real-Time Nakamoto Coefficient Tracker";
+  const description =
+    "Track the Nakamoto Coefficient for major Proof-of-Stake blockchains in near-real time. Compare decentralization, explore methodology, and export data. By Chainflow.";
+  const url = "https://nakaflow.io/";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Nakaflow",
+    url,
+    description: "Real-time Nakamoto Coefficient tracker for Proof-of-Stake blockchains",
+    applicationCategory: "Blockchain Analytics",
+    operatingSystem: "Web",
+    creator: {
+      "@type": "Organization",
+      name: "Chainflow",
+      url: "https://chainflow.io",
+    },
+  };
+
   return (
     <Head>
-      <meta property="og:title" content="MoneyPrinter.info" />
+      <meta name="description" content={description} />
+      <link rel="canonical" href={url} />
+
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={url} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
       <meta
         property="og:image"
-        content={`https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/social/top.png`}
-      />
-      <meta
-        property="og:description"
-        content="How much money are protocols paying to grow?"
+        content={`${url}og-image.png`}
       />
 
-      <meta name="twitter:title" content="MoneyPrinter.info" />
-      <meta
-        name="twitter:description"
-        content="How much money are protocols paying to grow?"
-      />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
       <meta
         name="twitter:image"
-        content={`https://${
-          process.env.NEXT_PUBLIC_VERCEL_URL
-        }/api/social/top.png?${new Date().getDate()}`}
+        content={`${url}og-image.png`}
       />
-      <meta name="twitter:card" content="summary_large_image" />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     </Head>
   );
 };
