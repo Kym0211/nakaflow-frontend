@@ -61,7 +61,7 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
   return (
     <main>
       <h1 className="title">Nakamoto Coefficients</h1>
-      <p className="description">Live decentralization metrics for Proof-of-Stake blockchains </p>
+      <h2 className="description">Live decentralization metrics for Proof-of-Stake blockchains </h2>
       <p className="content">
         See how resistant a chain is to censorship or collusion. Compare metrics, explore thresholds, export data.
       </p>
@@ -136,7 +136,7 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
       </div>
 
       <div>
-        <p className="contentTitle">Support Nakaflow</p>
+        <h2 className="contentTitle">Stake With Chainflow</h2>
         <p className="content">
           Nakaflow is brought to you by{" "}
           <a href="https://chainflow.io/">Chainflow</a>, a crypto infrastructure
