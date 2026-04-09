@@ -53,7 +53,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   }
 };
 
-const Home: React.FC<HomeProps> = ({ chains, lastUpdated }) => {
+const Home: React.FC<HomeProps> = ({ chains }) => {
   const sortedChains = [...chains].sort((a, b) =>
     a.results.name.localeCompare(b.results.name)
   );
