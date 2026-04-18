@@ -2,11 +2,11 @@ import React from "react";
 import Row from "./Row";
 
 interface ListProps {
-  data: any[];
+  chainflowChains: any[];
+  otherChains: any[];
 }
 
-const List: React.FC<ListProps> = ({ data }) => {
-  // console.log(data)
+const List: React.FC<ListProps> = ({ chainflowChains, otherChains }) => {
   return (
     <div className="list">
       <div className="header">
@@ -14,10 +14,26 @@ const List: React.FC<ListProps> = ({ data }) => {
         <div className="amount">Current Value</div>
         <div className="amount">Previous Value</div>
       </div>
-      
-      {data?.map((protocol: any) => (
-        <Row protocol={protocol} key={protocol.id} />
-      ))}
+
+      {chainflowChains.length > 0 && (
+        <>
+          <div className="section-header chainflow-section">
+            Operated by Chainflow
+          </div>
+          {chainflowChains.map((protocol: any) => (
+            <Row protocol={protocol} key={protocol.id} />
+          ))}
+        </>
+      )}
+
+      {otherChains.length > 0 && (
+        <>
+          <div className="section-header">Other Networks</div>
+          {otherChains.map((protocol: any) => (
+            <Row protocol={protocol} key={protocol.id} />
+          ))}
+        </>
+      )}
 
       <style jsx>{`
         .list {
@@ -41,6 +57,25 @@ const List: React.FC<ListProps> = ({ data }) => {
         .header .amount:hover {
           cursor: pointer;
           background: #eee;
+        }
+
+        .section-header {
+          padding: 10px 16px;
+          background: #f5f5f5;
+          color: #444;
+          font-size: 13px;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          border-bottom: solid 1px #e3e3e3;
+          border-top: solid 1px #e3e3e3;
+        }
+
+        .section-header.chainflow-section {
+          background: #eaf0ff;
+          color: #1a2a50;
+          border-left: 4px solid #4a6cf7;
+          padding-left: 12px;
         }
 
         .item {

@@ -31,15 +31,39 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
           });
         }}
         className={`item ${isApp ? "app" : ""} ${open ? "open" : ""}`}
-        style={{
-          backgroundImage: protocol.results.icon
-            ? `url('${protocol.results.icon}')`
-            : undefined,
-        }}
       >
+        {protocol.results.icon && (
+          <img
+            src={protocol.results.icon}
+            alt={`${protocol.results.name} logo`}
+            width={20}
+            height={20}
+            loading="lazy"
+            className="chain-logo"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        )}
         <div className="name">
           {protocol.results.name}
           <span className={`info-icon ${open ? "active" : ""}`}><Info size={14} /></span>
+          {protocol.results.stakingUrl && (
+            <a
+              className="stake-btn"
+              href={protocol.results.stakingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.stopPropagation();
+                plausible("stake-click", {
+                  props: { label: protocol.results.name },
+                });
+              }}
+            >
+              Stake {protocol.results.chainToken}
+            </a>
+          )}
         </div>
         <div className="amount">{protocol.results.currVal == undefined ? 0: protocol.results.currVal}</div>
         <div className="amount">{protocol.results.prevVal == undefined ? 0: protocol.results.prevVal}</div>
@@ -47,7 +71,7 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
 
       <CSSTransition in={open} timeout={500} unmountOnExit>
         <div className="details-container">
-          <DetailsCard metadata={protocol.results.metadata} />
+          <DetailsCard metadata={protocol.results.metadata} chainToken={protocol.results.chainToken} chainName={protocol.results.name} />
         </div>
       </CSSTransition>
       </>}
@@ -57,14 +81,39 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
           padding: 0 4px;
           background-color: #fff;
           font-size: 18px;
-          background-repeat: no-repeat;
-          background-position: 10px center;
-          background-size: 20px 20px;
           padding-left: 10px;
           color: black;
           text-decoration: none;
           align-items: center;
           height: 54px;
+        }
+        .chain-logo {
+          width: 20px;
+          height: 20px;
+          object-fit: contain;
+          flex-shrink: 0;
+        }
+        .stake-btn {
+          margin-left: 8px;
+          padding: 3px 10px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #fff;
+          background: #4a6cf7;
+          border-radius: 4px;
+          text-decoration: none;
+          white-space: nowrap;
+          transition: background 0.15s ease;
+        }
+        .stake-btn:hover {
+          background: #3553d1;
+        }
+        @media (max-width: 500px) {
+          .stake-btn {
+            padding: 2px 6px;
+            font-size: 11px;
+            margin-left: 4px;
+          }
         }
         .item:hover {
           background-color: #f5f5f5;
@@ -79,7 +128,7 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
 
         .name {
           flex: 1;
-          padding-left: 32px;
+          padding-left: 12px;
           display: flex;
           align-items: center;
           gap: 6px;
@@ -170,8 +219,7 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
           }
 
           .item {
-            padding-left: 30px;
-            background-position: 6px center;
+            padding-left: 6px;
           }
 
           .info-icon {
@@ -183,9 +231,6 @@ const Row: React.FC<RowProps> = ({ protocol }) => {
         @media (max-width: 500px) {
           .name {
             padding-left: 8px;
-          }
-          .item {
-            background-position: 8px 19px;
           }
           .amount {
             min-width: 80px;

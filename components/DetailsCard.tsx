@@ -1,5 +1,134 @@
 import React, { useEffect, useState } from 'react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+} from 'recharts';
 import Attribute from './Attribute';
+
+interface NCHistoryRecord {
+  chain_token: string;
+  chain_name: string;
+  nc_value: number;
+  timestamp: string;
+}
+
+const NC_HISTORY_BASE = 'https://nakaflow.io/nc-history';
+
+const NCHistoryChart: React.FC<{ chainToken: string; chainName: string }> = ({ chainToken, chainName }) => {
+  const [records, setRecords] = useState<NCHistoryRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!chainToken) {
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    fetch(`${NC_HISTORY_BASE}?chain=${encodeURIComponent(chainToken)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        if (cancelled) return;
+        setRecords(Array.isArray(data.records) ? data.records : []);
+        setLoading(false);
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setError(e?.message || 'Failed to load history');
+        setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [chainToken]);
+
+  if (loading) return <div className="chart-status">Loading history…</div>;
+  if (error) return <div className="chart-status">Failed to load history ({error}).</div>;
+  if (!records.length) return <div className="chart-status">No history available yet for {chainName || chainToken}.</div>;
+
+  const data = records.map((r) => ({
+    t: new Date(r.timestamp).getTime(),
+    nc: r.nc_value,
+  }));
+
+  const formatTick = (ms: number) =>
+    new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  const formatTooltip = (ms: number) =>
+    new Date(ms).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+
+  return (
+    <div className="nc-chart-wrapper">
+      <div className="chart-title">NC history — {chainName || chainToken}</div>
+      <div className="chart-box">
+        <ResponsiveContainer width="100%" height={220}>
+          <LineChart data={data} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+            <CartesianGrid stroke="#eee" vertical={false} />
+            <XAxis
+              dataKey="t"
+              type="number"
+              scale="time"
+              domain={['dataMin', 'dataMax']}
+              tickFormatter={formatTick}
+              tick={{ fontSize: 11, fill: '#666' }}
+              stroke="#ccc"
+            />
+            <YAxis
+              allowDecimals={false}
+              tick={{ fontSize: 11, fill: '#666' }}
+              stroke="#ccc"
+              width={36}
+            />
+            <Tooltip
+              labelFormatter={(v) => formatTooltip(v as number)}
+              formatter={(v: any) => [v, 'NC']}
+            />
+            <Line
+              type="monotone"
+              dataKey="nc"
+              stroke="#4a6cf7"
+              strokeWidth={2}
+              dot={{ r: 2 }}
+              activeDot={{ r: 4 }}
+              isAnimationActive={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <style jsx>{`
+        .nc-chart-wrapper {
+          margin-top: 12px;
+        }
+        .chart-title {
+          font-weight: 600;
+          font-size: 14px;
+          color: #1a1a2e;
+          margin-bottom: 6px;
+        }
+        .chart-box {
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          padding: 8px;
+          background: #fff;
+        }
+        .chart-status {
+          font-size: 13px;
+          color: #888;
+          padding: 12px 0;
+        }
+      `}</style>
+    </div>
+  );
+};
 
 interface ValidatorInfo {
   pubkey: string;
@@ -280,7 +409,7 @@ const EntityTable: React.FC<{ endpoint: string }> = ({ endpoint }) => {
   );
 };
 
-const DetailsCard: React.FC<{ metadata: any }> = ({ metadata }) => {
+const DetailsCard: React.FC<{ metadata: any; chainToken?: string; chainName?: string }> = ({ metadata, chainToken, chainName }) => {
   const [entityCount, setEntityCount] = useState<number | null>(null);
 
   // Fetch entity count for the remark text replacement
@@ -355,6 +484,10 @@ const DetailsCard: React.FC<{ metadata: any }> = ({ metadata }) => {
 
         {metadata.entityDetailsEndpoint && (
           <EntityTable endpoint={metadata.entityDetailsEndpoint} />
+        )}
+
+        {chainToken && (
+          <NCHistoryChart chainToken={chainToken} chainName={chainName || ''} />
         )}
 
         <div className="spacer" />

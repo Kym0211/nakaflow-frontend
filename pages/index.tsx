@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { GetStaticProps } from "next";
 import List from "components/List";
-import CHAIN_DATA from "../components/constants";
+import CHAIN_DATA, { CHAINFLOW_OPERATED } from "../components/constants";
 
 interface ChainResult {
   id: number;
@@ -12,6 +12,9 @@ interface ChainResult {
     icon: string;
     currVal: number;
     prevVal: number;
+    chainToken: string;
+    chainflowOperated: boolean;
+    stakingUrl: string | null;
   };
 }
 
@@ -22,6 +25,7 @@ interface HomeProps {
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   try {
+    // const res = await fetch("http://localhost:8080/naka-coeffs");
     const res = await fetch("https://nakaflow.io/api/naka-coeffs");
     const r = await res.json();
 
@@ -33,6 +37,9 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
         icon: CHAIN_DATA?.get(chain.chain_token)?.icon ?? "",
         currVal: chain.naka_co_curr_val ?? 0,
         prevVal: chain.naka_co_prev_val ?? 0,
+        chainToken: chain.chain_token ?? "",
+        chainflowOperated: CHAINFLOW_OPERATED.has(chain.chain_token ?? ""),
+        stakingUrl: CHAIN_DATA?.get(chain.chain_token)?.stakingUrl ?? null,
       },
     }));
 
@@ -54,9 +61,15 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 const Home: React.FC<HomeProps> = ({ chains }) => {
-  const sortedChains = [...chains].sort((a, b) =>
-    a.results.name.localeCompare(b.results.name)
-  );
+  const byName = (a: ChainResult, b: ChainResult) =>
+    a.results.name.localeCompare(b.results.name);
+  const chainflowChains = chains
+    .filter((c) => c.results.chainflowOperated)
+    .sort(byName);
+  const otherChains = chains
+    .filter((c) => !c.results.chainflowOperated)
+    .sort(byName);
+  const sortedChains = [...chainflowChains, ...otherChains];
 
   return (
     <main>
@@ -67,7 +80,7 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
       </p>
       {/* {lastUpdated && <p className="lastUpdated">Last updated: {lastUpdated}</p>} */}
       <p className="lastUpdated">Last updated: Apr 6, 2026, 12:00 PM UTC (harcoded for now)</p> 
-      <List data={sortedChains} />
+      <List chainflowChains={chainflowChains} otherChains={otherChains} />
       <button
         className="csv-btn"
         onClick={() => {

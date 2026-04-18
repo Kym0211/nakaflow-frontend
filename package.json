@@ -8,7 +8,6 @@
     "type-check": "tsc"
   },
   "dependencies": {
-    "swr": "2.0.0",
     "@popperjs/core": "^2.11.0",
     "axios": "^0.24.0",
     "next": "13.1.1",
@@ -18,7 +17,9 @@
     "react-feather": "2.0.10",
     "react-popper": "2.3.0",
     "react-transition-group": "4.4.5",
-    "sharp": "0.31.3"
+    "recharts": "^3.8.1",
+    "sharp": "0.31.3",
+    "swr": "2.0.0"
   },
   "devDependencies": {
     "@types/node": "18.11.18",
