@@ -60,7 +60,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   }
 };
 
-const Home: React.FC<HomeProps> = ({ chains }) => {
+const Home: React.FC<HomeProps> = ({ chains, lastUpdated }) => {
   const byName = (a: ChainResult, b: ChainResult) =>
     a.results.name.localeCompare(b.results.name);
   const chainflowChains = chains
@@ -78,8 +78,7 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
       <p className="content">
         See how resistant a chain is to censorship or collusion. Compare metrics, explore thresholds, export data.
       </p>
-      {/* {lastUpdated && <p className="lastUpdated">Last updated: {lastUpdated}</p>} */}
-      <p className="lastUpdated">Last updated: Apr 6, 2026, 12:00 PM UTC (harcoded for now)</p> 
+      {lastUpdated && <p className="lastUpdated">Last updated: {lastUpdated}</p>}
       <List chainflowChains={chainflowChains} otherChains={otherChains} />
       <button
         className="csv-btn"
@@ -104,7 +103,7 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
         Export CSV
       </button>
       <div>
-        <p className="contentTitle">About the Nakamoto Coefficient</p>
+        <h2 className="contentTitle">About the Nakamoto Coefficient</h2>
         <p className="content">
           The <b>Nakamoto Coefficient</b> measures how many independent entities are required to control a critical share of a blockchain network (typically 33% for Proof-of-Stake systems). The higher the number, the harder it is for any small group to censor transactions or halt the chain. (i.e. the higher the Nakamoto Coefficient, the better.)
           <br /><br />
@@ -115,9 +114,9 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
       </div>
 
       <div>
-        <p className="contentTitle">
+        <h2 className="contentTitle">
           Our Methodology for calculating the Nakamoto Coefficient
-        </p>
+        </h2>
         <div className="content">
           At Nakaflow, we calculate the Nakamoto Coefficient using the best available entity-level staking data. Instead of counting individual validator nodes in isolation, we aggregate stake by controlling entities, including:
           <ul>
@@ -133,7 +132,7 @@ const Home: React.FC<HomeProps> = ({ chains }) => {
       </div>
 
       <div>
-        <p className="contentTitle">Contributors</p>
+        <h2 className="contentTitle">Contributors</h2>
         <div className="content">
         Thank you to the following contributors who have submitted pull requests to add networks to Nakaflow.
           <ul>

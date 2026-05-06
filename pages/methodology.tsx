@@ -35,7 +35,7 @@ const Methodology: React.FC = () => {
       </p>
 
       <div>
-        <p className="contentTitle">What is the Nakamoto Coefficient?</p>
+        <h2 className="contentTitle">What is the Nakamoto Coefficient?</h2>
         <p className="content">
           The <b>Nakamoto Coefficient</b> measures how many independent entities
           are required to control a critical share of a blockchain network
@@ -56,9 +56,9 @@ const Methodology: React.FC = () => {
       </div>
 
       <div>
-        <p className="contentTitle">
+        <h2 className="contentTitle">
           How We Calculate the Nakamoto Coefficient
-        </p>
+        </h2>
         <div className="content">
           At Nakaflow, we calculate the Nakamoto Coefficient using the best
           available entity-level staking data. Instead of counting individual
@@ -75,7 +75,7 @@ const Methodology: React.FC = () => {
       </div>
 
       <div>
-        <p className="contentTitle">Important Limitations</p>
+        <h2 className="contentTitle">Important Limitations</h2>
         <p className="content">
           Nakaflow's Nakamoto Coefficient should be understood as a
           conservative, data-driven estimate, not an absolute truth. Where
@@ -92,9 +92,9 @@ const Methodology: React.FC = () => {
       </div>
 
       <div>
-        <p className="contentTitle">
+        <h2 className="contentTitle">
           Improving the Nakamoto Coefficient on Your Networks
-        </p>
+        </h2>
         <p className="content">
           Improving a blockchain's Nakamoto Coefficient means reducing the
           concentration of control among a small number of large entities. In
@@ -108,9 +108,9 @@ const Methodology: React.FC = () => {
       </div>
 
       <div>
-        <p className="contentTitle">
+        <h2 className="contentTitle">
           Practical Ways to Improve the Nakamoto Coefficient
-        </p>
+        </h2>
         <div className="content">
           Token holders can directly influence network decentralization by
           adjusting their staking behavior. Two proven approaches are:
@@ -134,7 +134,7 @@ const Methodology: React.FC = () => {
       </div>
 
       <div>
-        <p className="contentTitle">Why This Matters</p>
+        <h2 className="contentTitle">Why This Matters</h2>
         <p className="content">
           A higher Nakamoto Coefficient makes a network more resilient to
           censorship, collusion, and operational failure. While protocol design
